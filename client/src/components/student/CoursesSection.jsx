@@ -9,7 +9,7 @@ const CoursesSection = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/courses/all`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/course/all`);
         if (res.data.success) {
           setAllCourses(res.data.courses);
         }
