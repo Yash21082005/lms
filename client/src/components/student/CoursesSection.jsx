@@ -1,12 +1,25 @@
-import React, { useContext } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { AppContext } from '../../context/AppContext';
 import CourseCard from './CourseCard';
+import axios from 'axios';
 
 const CoursesSection = () => {
-  const { allCourses } = useContext(AppContext);
-  console.log("All Courses:", allCourses);
+  const [allCourses, setAllCourses] = useState([]);
 
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/courses/all`);
+        if (res.data.success) {
+          setAllCourses(res.data.courses);
+        }
+      } catch (err) {
+        console.error("Error fetching courses in CoursesSection:", err);
+      }
+    };
+
+    fetchCourses();
+  }, []);
 
   return (
     <section className="py-16 md:px-40 px-8">
@@ -21,7 +34,7 @@ const CoursesSection = () => {
           deliver real-world results.
         </p>
 
-        <div className="grid grid-cols-auto px-4  md:px-0 md:my-16 my-10 gap-4 ">
+        <div className="grid grid-cols-auto px-4 md:px-0 md:my-16 my-10 gap-4">
           {allCourses.slice(0, 4).map((course, index) => (
             <CourseCard key={index} course={course} />
           ))}
