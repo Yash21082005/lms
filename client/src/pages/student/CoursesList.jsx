@@ -15,7 +15,7 @@ const CoursesList = () => {
   useEffect(() => {
     const fetchCourses = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/courses/all`);
+        const res = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/courses/all`);
         const allCourses = res.data.courses;
 
         const filtered = input
