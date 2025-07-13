@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react'
-import uniqid from 'uniqid'
+import { nanoid } from 'nanoid'
 import Quill from 'quill'
 import { assets } from '../../assets/assets' 
 import { useContext } from 'react'
@@ -33,7 +33,7 @@ const handleChapter = (action, chapterId) => {
     const title = prompt('Enter Chapter Name:');
     if (title) {
       const newChapter = {
-        chapterId: uniqid(),
+        chapterId: nanoid(),
         chapterTitle: title,
         chapterContent: [],
         collapsed: false,
@@ -81,7 +81,7 @@ const addLecture = () => {
           lectureOrder: chapter.chapterContent.length > 0
             ? chapter.chapterContent.slice(-1)[0].lectureOrder + 1
             : 1,
-          lectureId: uniqid(),
+          lectureId: nanoid(),
         };
         chapter.chapterContent.push(newLecture);
       }

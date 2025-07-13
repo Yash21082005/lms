@@ -24,41 +24,78 @@ const CourseDetails = () => {
     calculateCourseDuration,
     calculateChapterTime,currency, backendUrl, userData, getToken} = useContext(AppContext)
 
-  const fetchCourseData = async ()=>{
-   try {
-    const {data} = await axios.get(backendUrl + '/courses/'+ id)
-
-    if(data.success){
-        setCourseData(data.courseData)
-    }else{
-      toast.error(data.message)
+     const enrollCourse = async () => {
+  try {
+    if (!userData) {
+      return toast.warn('Login to Enroll');
     }
-   } catch (error) {
-    toast.error(error.message)
-   }
-  }
-
-  const enrollCourse = async ()=>{
-    try {
-      if(!userData){
-         return toast.warn('Login to Enroll')
-      }
-      if(isAlreadyEnrolled ){
-         return toast.warn('Already Enrolled')
-      }
-      const token= await getToken();
-
-      const {data} = await axios.post(backendUrl + '/api/user/purchase',{courseId:courseData._id},{headers:{Authorization: `Bearer ${token}`}})
-      if(data.success){
-        const {session_url} = data
-        window.location.replace(session_url)
-      }else{
-        toast.error(data.message)
-      }
-    } catch (error) {
-      toast.error(error.message)
+    if (isAlreadyEnrolled) {
+      return toast.warn('Already Enrolled');
     }
+
+    const token = await getToken();
+
+    // Call backend to create Razorpay order/session
+    const { data } = await axios.post(
+      backendUrl + '/api/user/purchase',
+      { courseId: courseData._id },
+      {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      }
+    );
+
+    if (data.success) {
+      const options = {
+        key: import.meta.env.VITE_RAZORPAY_KEY_ID, // ✅ add this to your .env file
+        amount: data.order.amount,
+        currency: data.order.currency,
+        name: "Edemy",
+        description: courseData.courseTitle,
+        image: courseData.courseThumbnail,
+        order_id: data.order.id,
+        handler: function (response) {
+          // After successful payment
+          toast.success("Payment Successful!");
+
+          // Optional: Redirect or refresh
+          window.location.reload();
+        },
+        prefill: {
+          name: userData.name,
+          email: userData.email
+        },
+        theme: {
+          color: "#1e40af"
+        }
+      };
+
+      const rzp = new window.Razorpay(options);
+      rzp.open();
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    console.error(error);
+    toast.error("Something went wrong");
   }
+};
+
+  const fetchCourseData = async () => {
+  try {
+    const { data } = await axios.get(backendUrl + '/courses/' + id);
+    if (data.success) {
+      setCourseData(data.courseData);
+    } else {
+      toast.error(data.message);
+    }
+  } catch (error) {
+    toast.error(error.message);
+  }
+};
+
+
   useEffect(()=>{
     fetchCourseData()
   },[])

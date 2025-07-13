@@ -35,7 +35,7 @@ app.post('/clerk', bodyParser.raw({ type: 'application/json' }), clerkWebhooks);
 
 // Routes
 app.use('/api/educator', express.json(), educatorRouter);
-app.use('/courses', express.json(), courseRouter);
+app.use('/api/course', express.json(), courseRouter);
 app.use('/api/user', express.json(), userRouter);
 app.post('/api/webhooks/razorpay', express.raw({ type: 'application/json' }), razorpayWebhooks);
 
